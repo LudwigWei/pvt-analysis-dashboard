@@ -9,133 +9,150 @@ def apply_base_styles() -> None:
     st.markdown(
         """
         <style>
-        .app-header {
-            background: linear-gradient(180deg, #0b2f57 0%, #0a2646 100%);
-            color: #ffffff;
-            padding: 18px 22px;
-            border-radius: 10px;
-            margin-bottom: 16px;
+        /* Ensure the main background color stays light gray */
+        .stApp {
+            background-color: #f8fafc;
         }
-        .app-header h1 {
-            font-size: 24px;
-            margin: 0 0 4px 0;
+
+        /* Hide the default Streamlit header (Deploy button, menu, etc.) */
+        header[data-testid="stHeader"] {
+            display: none !important;
         }
-        .app-header .subtitle {
-            font-size: 13px;
-            opacity: 0.9;
+
+        /* Remove the massive default padding at the top of the app */
+        .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
         }
-        div[data-testid="stVerticalBlock"]:has(.input-card-marker):not(:has(div[data-testid="stVerticalBlock"]:has(.input-card-marker))) {
-            background: #0f1624;
-            border: 1px solid #1f2a3d;
-            border-radius: 14px;
-            padding: 16px 16px 8px 16px;
-            box-shadow: 0 10px 26px rgba(5, 10, 20, 0.45);
+
+        /* Top Navigation Bar */
+        .navbar {
+            background-color: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 8px 0px 16px 0px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .input-card-marker {
-            height: 0;
-            overflow: hidden;
-        }
-        .panel-title {
-            color: #9fb4d1;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin: 2px 2px 14px 2px;
-        }
-        .badge {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #2b66a7;
-            color: #ffffff;
+        .navbar-brand {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            margin-top: 22px;
+            gap: 12px;
+        }
+        .navbar-logo {
+            background: #0f172a; /* Dark slate for high contrast */
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+        .navbar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-left: 12px;
+            border-left: 1px solid #cbd5e1;
+            padding-left: 12px;
+        }
+        .navbar-right {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* Target the Left Column directly (Input Panel) */
+        div[data-testid="stColumn"]:has(.input-card-marker) {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 24px 20px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+        }
+
+        /* Input Panel Typography and Elements */
+        .panel-title {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 2px 2px 14px 2px;
         }
         .field-label {
             font-size: 12px;
             font-weight: 600;
-            color: #e2e8f0;
+            color: #334155;
             margin-bottom: 4px;
         }
-        .unit-text {
-            font-size: 11px;
-            color: #8fa2c0;
-            margin-top: 34px;
-        }
         .divider {
-            border-bottom: 1px solid #1f2a3d;
+            border-bottom: 1px solid #e2e8f0;
             margin: 10px 0 12px 0;
         }
+        
+        /* Streamlit Inputs and Buttons */
+        .stNumberInput input, .stSelectbox > div > div {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 8px !important;
+        }
         .stNumberInput input {
-            background: #1c2433 !important;
-            color: #f8fafc !important;
-            border: 1px solid #2a3447 !important;
-            border-radius: 10px !important;
             padding: 10px 12px !important;
         }
+        .stNumberInput input:focus, .stSelectbox > div > div:focus-within {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 1px #0284c7 !important;
+        }
         .stButton > button {
-            border-radius: 10px !important;
+            border-radius: 8px !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #ffffff !important;
+            color: #334155 !important;
+            font-weight: 600 !important;
         }
-        .analysis-card,
-        .results-card {
-            background: #0f1624;
-            border: 1px solid #1f2a3d;
-            border-radius: 14px;
-            padding: 14px 16px 12px 16px;
-            box-shadow: 0 10px 26px rgba(5, 10, 20, 0.45);
-            margin-bottom: 16px;
+        .stButton > button[data-testid="baseButton-primary"] {
+            background: #0284c7 !important;
+            border: 1px solid #0284c7 !important;
+            color: #ffffff !important;
         }
+        .stButton > button[data-testid="baseButton-primary"]:hover {
+            background: #0369a1 !important;
+            border-color: #0369a1 !important;
+        }
+        .stButton > button:hover:not([data-testid="baseButton-primary"]) {
+            border-color: #94a3b8 !important;
+            color: #0f172a !important;
+            background: #f8fafc !important;
+        }
+
+        /* Main Analysis & Results typography */
         .analysis-header {
-            background: #1f6f5c;
-            color: #ffffff;
+            background: #f8fafc;
+            color: #0f172a;
             padding: 8px 12px;
             border-radius: 10px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
         }
-        .analysis-selector {
-            height: 0;
-            overflow: hidden;
-        }
-        div[data-testid="stRadio"] > div[role="radiogroup"] {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 10px;
-        }
-        div[data-testid="stRadio"] label {
-            background: #1c2433;
-            border: 1px solid #2a3447;
-            border-radius: 12px;
-            padding: 16px 12px;
-            min-height: 72px;
-            color: #e2e8f0;
-            font-weight: 600;
-            text-align: center;
-        }
-        div[data-testid="stRadio"] label:has(input:checked) {
-            background: #111827;
-            border-color: #475569;
-            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.35);
-        }
-        div[data-testid="stRadio"] input {
-            display: none;
-        }
-        div[data-testid="stVerticalBlock"]:has(.chart-card-marker) {
-            background: #0b1220;
-            border: 1px solid #1f2a3d;
-            border-radius: 12px;
-            padding: 12px;
-        }
-        .chart-card-marker {
-            height: 0;
-            overflow: hidden;
-        }
+
+        /* Property Table */
         .property-table {
             width: 100%;
             border-collapse: collapse;
@@ -144,44 +161,50 @@ def apply_base_styles() -> None:
         }
         .property-table th,
         .property-table td {
-            border: 1px solid #273449;
-            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            padding: 8px 10px;
             text-align: left;
-            color: #e2e8f0;
+            color: #334155;
             white-space: nowrap;
         }
         .property-table th {
-            background: #111827;
-            color: #94a3b8;
-            font-weight: 500;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
             text-transform: uppercase;
             font-size: 10px;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
         }
+        
+        /* Fluid Classification Card */
         .fluid-card {
-            background: #111827;
-            border: 1px solid #1f2a3d;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 12px 14px;
+            padding: 14px 16px;
             margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(15,23,42,0.02);
         }
         .fluid-label {
             font-size: 10px;
-            color: #94a3b8;
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
         .fluid-name {
             font-size: 18px;
-            font-weight: 600;
-            color: #e2e8f0;
+            font-weight: 700;
+            color: #0f172a;
             margin-top: 6px;
         }
         .fluid-desc {
             font-size: 12px;
-            color: #94a3b8;
+            color: #475569;
             margin-top: 4px;
         }
+
+        /* Clean up unused/broken wrapper classes */
+        .input-card-marker, .chart-card-marker { display: none; }
         </style>
         """,
         unsafe_allow_html=True,
@@ -191,21 +214,37 @@ def apply_base_styles() -> None:
 def render_header() -> None:
     st.markdown(
         """
-        <div class="app-header">
-            <h1>PVT Analysis System</h1>
-            <div class="subtitle">Pressure • Volume • Temperature Analysis</div>
+        <div class="navbar">
+            <div class="navbar-brand">
+                <div class="navbar-logo">PVT</div>
+                <div>
+                    <span class="navbar-title">PVT Analysis System</span>
+                    <span class="navbar-subtitle">Reservoir Engineering</span>
+                </div>
+            </div>
+            <div class="navbar-right">
+                Standing • Beggs-Robinson • Papay • LGE
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
 
-st.set_page_config(page_title="PVT Analysis System", layout="wide")
+st.set_page_config(
+    page_title="PVT Analysis System", 
+    page_icon="🛢️", 
+    layout="wide", 
+    initial_sidebar_state="collapsed"
+)
+
 init_state()
 apply_base_styles()
 render_header()
 
-left_col, right_col = st.columns([1, 3], gap="large")
+# The main layout. 1 to 2.5 ratio gives the right side a nice breathing room!
+left_col, right_col = st.columns([1, 2.5], gap="large")
+
 with left_col:
     render_input_panel()
 
