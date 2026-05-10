@@ -9,39 +9,28 @@ def apply_base_styles() -> None:
     st.markdown(
         """
         <style>
-        /* Ensure the main background color stays pure white */
+        /* Main App Background (Faint Ice Blue) */
         .stApp {
             background-color: #ffffff;
         }
 
-        /* Hide the default Streamlit header (Deploy button, menu, etc.) */
-        header[data-testid="stHeader"] {
-            display: none !important;
-        }
-
-        /* Remove the massive default padding at the top of the app */
-        .block-container {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-        }
+        header[data-testid="stHeader"] { display: none !important; }
+        .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
 
         /* Top Navigation Bar */
         .navbar {
             background-color: transparent;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #d3e1ee; /* Pale Blue Border */
             padding: 8px 0px 16px 0px;
             margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .navbar-brand { display: flex; align-items: center; gap: 12px; }
+        
         .navbar-logo {
-            background: #0f172a; /* Dark slate for high contrast */
+            background: #006fbb; /* Ocean Blue */
             color: #ffffff;
             font-weight: 700;
             font-size: 13px;
@@ -52,133 +41,81 @@ def apply_base_styles() -> None:
         .navbar-title {
             font-size: 18px;
             font-weight: 700;
-            color: #0f172a;
-            margin: 0;
-            padding: 0;
+            color: #0f2942; /* Deep Navy */
+            margin: 0; padding: 0;
         }
         .navbar-subtitle {
             font-size: 13px;
-            color: #64748b;
+            color: #5b7b97; /* Steel Blue */
             margin-left: 12px;
-            border-left: 1px solid #cbd5e1;
+            border-left: 1px solid #d3e1ee;
             padding-left: 12px;
         }
         .navbar-right {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d3e1ee; /* Pale Blue Border */
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 11px;
-            color: #64748b;
+            color: #5b7b97; /* Steel Blue */
             font-weight: 600;
             letter-spacing: 0.3px;
-        }
-
-        /* Target the Left Column directly (Input Panel) */
-        div[data-testid="stColumn"]:has(.input-card-marker) {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 24px 20px;
-            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
         }
 
         /* Bento-Style Card Containers */
         div[data-testid="stVerticalBlock"]:has(> div.element-container .bento-card-marker) {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d3e1ee; /* Pale Blue Border */
             border-radius: 16px;
-            padding: 10px 24px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+            padding: 28px 32px;
+            box-shadow: 0 4px 20px rgba(15, 41, 66, 0.04); /* Adjusted shadow for navy tint */
             margin-bottom: 24px;
         }
 
         /* Hide Number Input Steppers */
         button[data-testid="stNumberInputStepDown"],
-        button[data-testid="stNumberInputStepUp"] {
-            display: none !important;
-        }
-
-        /* Input Panel Typography and Elements */
-        .panel-title {
-            color: #64748b;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin: 2px 2px 14px 2px;
-        }
-        .field-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-        .divider {
-            border-bottom: 1px solid #e2e8f0;
-            margin: 10px 0 12px 0;
-        }
+        button[data-testid="stNumberInputStepUp"] { display: none !important; }
         
-        /* Premium Streamlit Number Inputs & Dropdowns */
-        .stNumberInput div[data-baseweb="input"] {
-            background-color: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 8px !important;
-            padding: 0 !important;
-            overflow: hidden;
-        }
-        .stNumberInput div[data-baseweb="input"]:focus-within {
-            border-color: #0284c7 !important;
-            box-shadow: 0 0 0 1px #0284c7 !important;
-        }
-        /* Remove internal borders or separation artifacts */
-        .stNumberInput div[data-baseweb="base-input"] {
-            background-color: transparent !important;
-            border: none !important;
-        }
-        .stNumberInput input {
-            color: #0f172a !important;
-            font-weight: 500 !important;
-            padding: 8px 12px !important;
-            background-color: transparent !important;
-        }
-
-        .stSelectbox > div > div {
-            background: #f8fafc !important;
-            color: #0f172a !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 8px !important;
-        }
-        .stSelectbox > div > div:focus-within {
-            border-color: #0284c7 !important;
-            box-shadow: 0 0 0 1px #0284c7 !important;
-        }
-
+        /* --- Buttons --- */
         .stButton > button {
             border-radius: 8px !important;
-            border: 1px solid #cbd5e1 !important;
+            border: 1px solid #d3e1ee !important;
             background: #ffffff !important;
-            color: #334155 !important;
+            color: #0f2942 !important; 
             font-weight: 600 !important;
+            transition: all 0.2s ease;
         }
+        
+        /* Premium Primary CTA Button (Run Analysis) */
         .stButton > button[data-testid="baseButton-primary"] {
-            background: #0284c7 !important;
-            border: 1px solid #0284c7 !important;
+            background: linear-gradient(135deg, #006fbb 0%, #005a96 100%) !important;
+            border: none !important;
             color: #ffffff !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px !important;
+            padding: 12px 24px !important;
+            box-shadow: 0 4px 12px rgba(0, 111, 187, 0.25) !important;
+            transition: all 0.3s ease !important;
         }
+        
+        /* Hover Effect: Lift and Glow */
         .stButton > button[data-testid="baseButton-primary"]:hover {
-            background: #0369a1 !important;
-            border-color: #0369a1 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(0, 111, 187, 0.35) !important;
+            background: linear-gradient(135deg, #007dd1 0%, #0062a3 100%) !important;
         }
-        .stButton > button:hover:not([data-testid="baseButton-primary"]) {
-            border-color: #94a3b8 !important;
-            color: #0f172a !important;
-            background: #f1f5f9 !important;
+        
+        /* Active (Click) Effect: Press Down */
+        .stButton > button[data-testid="baseButton-primary"]:active {
+            transform: translateY(0px) !important;
+            box-shadow: 0 2px 8px rgba(0, 111, 187, 0.25) !important;
         }
 
-        /* Main Analysis & Results typography */
+        /* Results typography & tables (for results_display.py) */
         .analysis-header {
             background: #ffffff;
-            color: #0f172a;
+            color: #0f2942;
             padding: 8px 12px;
             border-radius: 10px;
             font-size: 12px;
@@ -186,62 +123,16 @@ def apply_base_styles() -> None:
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 12px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d3e1ee;
         }
+        .property-table th { background: #f4f8fb; color: #5b7b97; border: 1px solid #d3e1ee; }
+        .property-table td { border: 1px solid #d3e1ee; color: #0f2942; }
+        .fluid-card { border: 1px solid #d3e1ee; }
+        .fluid-label { color: #5b7b97; }
+        .fluid-name { color: #0f2942; }
+        .fluid-desc { color: #5b7b97; }
 
-        /* Property Table */
-        .property-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-        }
-        .property-table th,
-        .property-table td {
-            border: 1px solid #e2e8f0;
-            padding: 8px 10px;
-            text-align: left;
-            color: #334155;
-            white-space: nowrap;
-        }
-        .property-table th {
-            background: #f8fafc;
-            color: #475569;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 0.05em;
-        }
-        
-        /* Fluid Classification Card */
-        .fluid-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 6px rgba(15,23,42,0.02);
-        }
-        .fluid-label {
-            font-size: 10px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .fluid-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-top: 6px;
-        }
-        .fluid-desc {
-            font-size: 12px;
-            color: #475569;
-            margin-top: 4px;
-        }
-
-        /* Clean up unused/broken wrapper classes */
-        .input-card-marker, .chart-card-marker { display: none; }
+        .bento-card-marker, .chart-card-marker { display: none; }
         </style>
         """,
         unsafe_allow_html=True,

@@ -11,6 +11,7 @@ class PVTInputs:
     temp_f: float
     bubble_point_psia: float
     rs_pb: float
+    reservoir_pressure_psia: float  # Added to support the undersaturated region
 
 
 def calc_rs(api: float, gas_gravity: float, temp_rankine: float, pressure_psia: float) -> float:
@@ -62,21 +63,37 @@ def calc_mug(temp_rankine: float, pressure_psia: float, gas_gravity: float, z: f
     return max(1.0e-4 * k * (2.718281828 ** (x * (max(rho / 62.4, 0.001) ** y))), 0.005)
 
 
-def generate_rows(inputs: PVTInputs, steps: int = 10) -> List[dict]:
+def generate_rows(inputs: PVTInputs, steps: int = 15) -> List[dict]:
     t_rankine = inputs.temp_f + 460.0
     tpc, ppc = calc_pseudocritical(inputs.gas_gravity)
     tpr = t_rankine / tpc
 
     rows = []
+    # Always start simulation from the actual Reservoir Pressure
+    max_pressure = max(inputs.reservoir_pressure_psia, inputs.bubble_point_psia)
+    
     for i in range(steps + 1):
-        pressure = max(inputs.bubble_point_psia * (1.0 - i / steps), 100.0)
+        pressure = max(max_pressure * (1.0 - i / steps), 100.0)
+        
+        # Rs is capped at Rs_pb for pressures above Bubble Point (Undersaturated Region)
         rs = min(calc_rs(inputs.api, inputs.gas_gravity, t_rankine, pressure), inputs.rs_pb)
+        
+        # Calculate base saturated properties
         bo = calc_bo(inputs.api, inputs.gas_gravity, rs, t_rankine)
         muo = calc_muo(inputs.api, t_rankine, rs)
         co = calc_co(inputs.api, inputs.gas_gravity, rs, t_rankine, pressure, bo)
+        
+        # --- Undersaturated Adjustments ---
+        if pressure > inputs.bubble_point_psia:
+            # Bo shrinks slightly as pressure increases above Pb
+            bo = bo * (1.0 - co * (pressure - inputs.bubble_point_psia))
+            # Viscosity increases slightly as pressure increases above Pb
+            muo = muo * ((pressure / inputs.bubble_point_psia) ** 0.25)
+
         z = calc_z(pressure / ppc, tpr)
         bg = calc_bg(t_rankine, pressure, z)
         mug = calc_mug(t_rankine, pressure, inputs.gas_gravity, z)
+        
         rows.append({
             "P (psia)": pressure,
             "Rs (scf/STB)": rs,

@@ -4,6 +4,7 @@ import streamlit as st
 
 from calculations.fluid_classification import classify_fluid
 from calculations.pvt_properties import PVTInputs, generate_rows
+from calculations.bubble_point import bubble_point_pressure  # <-- Imported the correlation
 from components.charts import build_chart
 from components.fluid_card import render_fluid_card
 from components.interpretations import build_interpretations
@@ -52,19 +53,30 @@ def render_results_display() -> None:
     gas_gravity = snapshot.get("gas_gravity", 0.65)
     temp_f = snapshot.get("reservoir_temp_f", 180.0)
     reservoir_pressure_psia = snapshot.get("reservoir_pressure_psia", 2500.0)
+    producing_gor = snapshot.get("producing_gor_scfstb", 650.0)
 
-    # Perform Calculations
+    # --- THE ENGINEERING FIX ---
+    # Dynamically calculate Bubble Point based on Standing's correlation
+    calculated_pb = bubble_point_pressure(producing_gor, gas_gravity, temp_f, api)
+
+    # Perform Calculations with mathematically accurate inputs
     inputs = PVTInputs(
         api=api,
         gas_gravity=gas_gravity,
         temp_f=temp_f,
-        bubble_point_psia=reservoir_pressure_psia,
-        rs_pb=snapshot.get("producing_gor_scfstb", 650.0),
+        bubble_point_psia=calculated_pb,
+        rs_pb=producing_gor,
+        reservoir_pressure_psia=reservoir_pressure_psia, # <-- Pass the variable here
     )
     rows_data = generate_rows(inputs)
 
     # --- 1. TOP BANNER: Fluid Classification ---
-    fluid_info = classify_fluid(api, snapshot.get("producing_gor_scfstb", 650.0))
+    fluid_info = classify_fluid(api, producing_gor)
+    
+    # Optional UX upgrade: Let the user see what Bubble Point the tool calculated!
+    # We append the calculated Pb to the fluid card description for maximum clarity.
+    fluid_info["desc"] += f" <b>Calculated Bubble Point: {calculated_pb:,.0f} psia.</b>"
+    
     render_fluid_card(fluid_info)
 
     # Main Results Container
