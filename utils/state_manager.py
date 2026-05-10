@@ -11,6 +11,7 @@ DEFAULT_INPUTS = {
     "calculated": False,
     "input_snapshot": {},
     "current_view": "inputs",
+    "show_skeleton": False, # <-- Added state for the loader
 }
 
 INPUT_KEYS = [
@@ -42,6 +43,7 @@ def capture_inputs() -> None:
     }
     st.session_state.calculated = True
     st.session_state.current_view = "results"
+    st.session_state.show_skeleton = True # <-- Trigger skeleton on button click
 
 
 def navigate_to_inputs() -> None:
