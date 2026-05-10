@@ -7,6 +7,9 @@ def render_input_panel() -> None:
     st.markdown(
         """
         <style>
+        /* --- Import Google Material Symbols --- */
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
+
         /* Force Flexbox & Equal Heights */
         div[data-testid="stElementContainer"]:has(div[data-testid="stRadio"]),
         div[data-testid="stRadio"], div[data-testid="stRadio"] > div { width: 100% !important; display: block !important; }
@@ -14,39 +17,108 @@ def render_input_panel() -> None:
         div[data-testid="column"]:has(.equal-height-marker) { display: flex !important; flex-direction: column !important; }
         div[data-testid="stVerticalBlock"]:has(> div.element-container .equal-height-marker) { height: 100% !important; flex-grow: 1 !important; display: flex; flex-direction: column; }
 
-        /* 2x2 Bento Grid for Radio Buttons */
-        div[data-testid="stRadio"] > div[role="radiogroup"] { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; width: 100% !important; }
+        /* 1x4 Vertical List Layout for Radio Buttons */
+        div[data-testid="stRadio"] > div[role="radiogroup"] { 
+            display: flex !important; 
+            flex-direction: column !important; 
+            gap: 10px !important; 
+            width: 100% !important; 
+        }
+        
         div[data-testid="stRadio"] > div[role="radiogroup"] > label {
             background-color: #ffffff;
-            border: 1px solid #d3e1ee; /* Pale Blue Border */
+            border: 1px solid #d3e1ee;
             border-radius: 12px;
-            padding: 16px 8px;
+            padding: 14px 16px;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 1px 2px rgba(15, 41, 66, 0.02);
-            display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important;
-            min-height: 100px; margin: 0 !important;
+            display: flex !important; 
+            flex-direction: row !important;
+            justify-content: flex-start !important; 
+            align-items: center !important;
+            margin: 0 !important;
+            width: 100%;
         }
+        
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
-            border-color: #8ba3b6; /* Slightly darker border on hover */
+            border-color: #8ba3b6; 
         }
+        
         div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"],
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-            border-color: #006fbb !important; /* Ocean Blue */
-            background-color: #eaf4fb !important; /* Ocean Wash */
+            border-color: #006fbb !important; 
+            background-color: #eaf4fb !important; 
             box-shadow: 0 0 0 1px #006fbb !important;
         }
+        
         div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:first-child { display: none !important; }
+        
+        /* CSS Grid to split Icon, Title, and Subtitle */
         div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child {
-            font-weight: 600;
-            color: #0f2942; /* Deep Navy */
-            font-size: 13px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; 
+            font-weight: 700;
+            color: #0f2942; 
+            font-size: 14px; 
+            width: 100%; 
+            display: grid;
+            grid-template-columns: 44px 1fr; /* Space for the icon */
+            grid-template-rows: auto auto;
+            align-items: center; 
+            text-align: left;
+            line-height: 1.2;
         }
+
+        /* --- Unified Material Icon Styling --- */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child::before {
+            font-family: 'Material Symbols Outlined';
+            font-size: 26px;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            grid-column: 1;
+            grid-row: 1 / span 2;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        /* Active states fill the icon in */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] > div:last-child::before,
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) > div:last-child::before {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Subtitle Placement */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child::after {
+            grid-column: 2;
+            grid-row: 2;
+            font-size: 11px;
+            color: #5b7b97;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* --- Content Injection & Distinct Thematic Colors per Option --- */
+        /* 1. Bubble Point (Cerulean) */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::before { content: "bubble_chart"; color: #0ea5e9; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::after { content: "Gas expansion & oil shrinkage limits"; }
+
+        /* 2. Viscosity (Royal Blue) */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::before { content: "water_drop"; color: #3b82f6; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::after { content: "Fluid mobility & flow resistance"; }
+
+        /* 3. Compressibility (Indigo) */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::before { content: "compress"; color: #6366f1; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::after { content: "Volumetric change under pressure"; }
+
+        /* 4. Phase Envelope (Teal) */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::before { content: "area_chart"; color: #14b8a6; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::after { content: "P-T thermodynamic boundaries"; }
+
 
         /* --- Enhanced Headers with Subtitles --- */
         .bento-header-wrapper {
-            display: flex; align-items: flex-start; margin-bottom: 28px; padding-bottom: 16px;
-            border-bottom: 1px solid #d3e1ee; /* Pale Blue Border */
+            display: flex; align-items: flex-start; margin-bottom: 20px; padding-bottom: 12px;
+            border-bottom: 1px solid #d3e1ee; 
         }
         .header-text-group { display: flex; flex-direction: column; gap: 4px; }
         .header-title { font-size: 17px; font-weight: 700; color: #0f2942; line-height: 1.2; letter-spacing: -0.2px; }
@@ -58,23 +130,28 @@ def render_input_panel() -> None:
         .field-unit { font-size: 11px; font-weight: 600; color: #5b7b97; }
 
         /* --- Bottom Helper Text --- */
-        .field-hint-bottom { font-size: 11px; font-weight: 500; color: #8ba3b6; text-align: left; margin-top: -6px; margin-bottom: 24px; padding-left: 2px; }
+        .field-hint-bottom { font-size: 11px; font-weight: 500; color: #8ba3b6; text-align: left; margin-top: -4px; margin-bottom: 16px; padding-left: 2px; }
 
         /* --- Unified, Crisp Input Borders --- */
         div[data-testid="stNumberInput"] { margin-bottom: 0px !important; }
         .stNumberInput div[data-baseweb="input"] {
             background-color: #ffffff !important;
-            border: 1px solid #d3e1ee !important; /* Pale Blue Border */
+            border: 1px solid #d3e1ee !important; 
             border-radius: 8px !important;
             box-shadow: 0 1px 2px rgba(15, 41, 66, 0.02) !important;
             transition: all 0.2s ease;
         }
         .stNumberInput input { color: #0f2942 !important; font-weight: 500 !important; }
         .stNumberInput div[data-baseweb="input"]:focus-within {
-            border-color: #006fbb !important; /* Ocean Blue */
+            border-color: #006fbb !important; 
             box-shadow: 0 0 0 2px rgba(0, 111, 187, 0.1) !important;
         }
-        div[data-testid="stVerticalBlock"] > div:has(> button) { margin-bottom: 0px; }
+        
+        /* --- OPTIMIZED BUTTON GAP --- */
+        div[data-testid="stVerticalBlock"] > div:has(> div[data-testid="stButton"]) { 
+            margin-top: -16px !important; 
+            margin-bottom: 0px !important; 
+        }
         </style>
         """,
         unsafe_allow_html=True
@@ -161,7 +238,7 @@ def render_input_panel() -> None:
                 <div class='bento-card-marker equal-height-marker'></div>
                 <div class='bento-header-wrapper'>
                     <div class='header-text-group'>
-                        <div class='header-title'>Configuration</div>
+                        <div class='header-title'>Analysis Type</div>
                         <div class='header-subtitle'>Select the PVT property model to simulate</div>
                     </div>
                 </div>
@@ -184,7 +261,4 @@ def render_input_panel() -> None:
                 horizontal=True
             )
 
-        st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-        
-        # Single, dominant Call-To-Action button
         st.button("▶ Run Analysis", type="primary", use_container_width=True, on_click=capture_inputs)
