@@ -5,7 +5,6 @@ from components.interpretations import build_interpretations
 from components.property_table import render_property_table
 
 def render_hero_kpi(label: str, value: str, unit: str, icon: str = "area_chart") -> str:
-    """Renders a prominent, teal-gradient Hero card for the phase envelope."""
     return f"""
     <div style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); border-radius: 16px; padding: 24px 32px; box-shadow: 0 6px 16px rgba(20, 184, 166, 0.2); color: #ffffff; display: flex; align-items: center; justify-content: space-between; height: 100%;">
         <div>
@@ -21,7 +20,6 @@ def render_hero_kpi(label: str, value: str, unit: str, icon: str = "area_chart")
     """
 
 def render_kpi_card(label: str, value: str, unit: str, color: str = "#0f2942") -> str:
-    """Renders a standard, clean bento KPI card."""
     return f"""
     <div style="background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;">
         <div style="font-size: 11px; color: #5b7b97; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">{label}</div>
@@ -32,26 +30,12 @@ def render_kpi_card(label: str, value: str, unit: str, color: str = "#0f2942") -
     """
 
 def render_phase_envelope_view(inputs: PVTInputs, rows_data: list[dict], fluid_info: dict, snapshot: dict, analysis_key: str):
-    """Bespoke UI Layout specifically designed for Phase Envelope Analysis."""
     
     # --- 1. The Hero Section ---
-    # Estimate Critical Temperature (Tc) based on pseudocritical math
-    # Formula: tpc = 168.0 + 325.0 * gas_gravity - 12.5 * gas_gravity^2
     tpc_r = 168.0 + 325.0 * inputs.gas_gravity - 12.5 * (inputs.gas_gravity ** 2)
     tc_f = tpc_r - 459.67
     
     st.markdown(render_hero_kpi("Est. Critical Temp", f"{tc_f:.1f}", "°F", "area_chart"), unsafe_allow_html=True)
-    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"""
-        <div class="fluid-tag-container">
-            <div class="fluid-tag-left">
-                <div class="fluid-tag-label">Phase Behavior</div>
-                <div class="fluid-tag-value">{fluid_info['name']}</div>
-            </div>
-            <div class="fluid-tag-desc">The phase envelope defines the boundaries where gas and liquid coexist.</div>
-        </div>
-    """, unsafe_allow_html=True)
-
     st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
     
     # --- 2. Thermodynamic Markers ---
@@ -72,15 +56,13 @@ def render_phase_envelope_view(inputs: PVTInputs, rows_data: list[dict], fluid_i
 
     with col_chart:
         fig = build_chart(analysis_key, rows_data, inputs.api, inputs.gas_gravity, inputs.temp_f, inputs.reservoir_pressure_psia)
-        
         fig.update_layout(
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color="#0f2942", family="Inter, sans-serif"),
-            colorway=['#14b8a6'], # Teal for Phase Envelope
+            colorway=['#14b8a6'],
             margin=dict(t=40, b=40, l=40, r=40)
         )
-        
         with st.container():
             st.markdown(
                 """
@@ -90,16 +72,30 @@ def render_phase_envelope_view(inputs: PVTInputs, rows_data: list[dict], fluid_i
                 }
                 </style>
                 <div class="phase-chart-marker"></div>
-                <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>P-T Diagram</h4>
+                <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>P-T Diagram</h4>
                 """, 
                 unsafe_allow_html=True
             )
             st.plotly_chart(fig, use_container_width=True)
 
     with col_interp:
+        # Fluid Identity Card (Stacked above Interpretation)
+        st.markdown(f"""
+            <div class="fluid-tag-container">
+                <div class="fluid-tag-left">
+                    <div class="fluid-tag-label">Phase Behavior</div>
+                    <div class="fluid-tag-value">{fluid_info['name']}</div>
+                </div>
+                <div class="fluid-tag-desc">The phase envelope defines the boundaries where gas and liquid coexist.</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+
+        # Interpretation Card
         interp_html = """
-        <div style='background: #fafcff; border: 1px solid #d3e1ee; border-top: 4px solid #14b8a6; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
-            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Interpretation</h4>
+        <div style='background: #fafcff; border: 1px solid #d3e1ee; border-top: 4px solid #14b8a6; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); flex-grow: 1; display: flex; flex-direction: column;'>
+            <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Interpretation</h4>
             <ul style='color: #2d4356; font-weight: 500; line-height: 1.7; font-size: 15px; padding-left: 20px; margin: 0;'>
         """
         for text in build_interpretations(analysis_key, rows_data, snapshot):
@@ -120,7 +116,7 @@ def render_phase_envelope_view(inputs: PVTInputs, rows_data: list[dict], fluid_i
             }
             </style>
             <div class="phase-table-marker"></div>
-            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Detailed Data</h4>
+            <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Detailed Data</h4>
             """, 
             unsafe_allow_html=True
         )

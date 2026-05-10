@@ -6,7 +6,6 @@ from components.interpretations import build_interpretations
 from components.property_table import render_property_table
 
 def render_hero_kpi(label: str, value: str, unit: str, icon: str = "water_drop") -> str:
-    """Renders a prominent, gradient Hero card for the primary output."""
     return f"""
     <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 16px; padding: 24px 32px; box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2); color: #ffffff; display: flex; align-items: center; justify-content: space-between; height: 100%;">
         <div>
@@ -22,7 +21,6 @@ def render_hero_kpi(label: str, value: str, unit: str, icon: str = "water_drop")
     """
 
 def render_kpi_card(label: str, value: str, unit: str, color: str = "#0f2942") -> str:
-    """Renders a standard, clean bento KPI card."""
     return f"""
     <div style="background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;">
         <div style="font-size: 11px; color: #5b7b97; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">{label}</div>
@@ -33,31 +31,16 @@ def render_kpi_card(label: str, value: str, unit: str, color: str = "#0f2942") -
     """
 
 def render_viscosity_view(inputs: PVTInputs, rows_data: list[dict], fluid_info: dict, snapshot: dict, analysis_key: str):
-    """Bespoke UI Layout specifically designed for Viscosity Analysis."""
     
     # --- 1. The Hero Section ---
-    # Extract viscosity at reservoir pressure (usually the first row in generate_rows)
     res_visc = rows_data[0]['muo (cp)'] if rows_data else 0.0
-    
     st.markdown(render_hero_kpi("Viscosity at Res. Pressure", f"{res_visc:.3f}", "cp", "water_drop"), unsafe_allow_html=True)
-    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"""
-        <div class="fluid-tag-container">
-            <div class="fluid-tag-left">
-                <div class="fluid-tag-label">Fluid Mobility</div>
-                <div class="fluid-tag-value">{fluid_info['name']}</div>
-            </div>
-            <div class="fluid-tag-desc">Viscosity measures the internal resistance to flow. Lower values indicate better mobility.</div>
-        </div>
-    """, unsafe_allow_html=True)
-
     st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
     
     # --- 2. Key Mobility Metrics ---
     st.markdown("<div class='results-section-title'>Critical Mobility Points</div>", unsafe_allow_html=True)
     
     if rows_data:
-        # Find the row closest to calculated bubble point for comparison
         pb_visc = next((r['muo (cp)'] for r in rows_data if r['P (psia)'] <= inputs.bubble_point_psia), rows_data[-1]['muo (cp)'])
         gas_visc = rows_data[0]['mug (cp)']
         
@@ -76,15 +59,13 @@ def render_viscosity_view(inputs: PVTInputs, rows_data: list[dict], fluid_info: 
 
     with col_chart:
         fig = build_chart(analysis_key, rows_data, inputs.api, inputs.gas_gravity, inputs.temp_f, inputs.reservoir_pressure_psia)
-        
         fig.update_layout(
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color="#0f2942", family="Inter, sans-serif"),
-            colorway=['#3b82f6'], # Royal Blue for Viscosity
+            colorway=['#3b82f6'],
             margin=dict(t=40, b=40, l=40, r=40)
         )
-        
         with st.container():
             st.markdown(
                 """
@@ -94,16 +75,30 @@ def render_viscosity_view(inputs: PVTInputs, rows_data: list[dict], fluid_info: 
                 }
                 </style>
                 <div class="visc-chart-marker"></div>
-                <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Viscosity Curves</h4>
+                <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Viscosity Curves</h4>
                 """, 
                 unsafe_allow_html=True
             )
             st.plotly_chart(fig, use_container_width=True)
 
     with col_interp:
+        # Fluid Identity Card (Stacked above Interpretation)
+        st.markdown(f"""
+            <div class="fluid-tag-container">
+                <div class="fluid-tag-left">
+                    <div class="fluid-tag-label">Fluid Mobility</div>
+                    <div class="fluid-tag-value">{fluid_info['name']}</div>
+                </div>
+                <div class="fluid-tag-desc">Viscosity measures the internal resistance to flow. Lower values indicate better mobility.</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+
+        # Interpretation Card
         interp_html = """
-        <div style='background: #fafcff; border: 1px solid #d3e1ee; border-top: 4px solid #3b82f6; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
-            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Interpretation</h4>
+        <div style='background: #fafcff; border: 1px solid #d3e1ee; border-top: 4px solid #3b82f6; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); flex-grow: 1; display: flex; flex-direction: column;'>
+            <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Interpretation</h4>
             <ul style='color: #2d4356; font-weight: 500; line-height: 1.7; font-size: 15px; padding-left: 20px; margin: 0;'>
         """
         for text in build_interpretations(analysis_key, rows_data, snapshot):
@@ -124,7 +119,7 @@ def render_viscosity_view(inputs: PVTInputs, rows_data: list[dict], fluid_info: 
             }
             </style>
             <div class="visc-table-marker"></div>
-            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Detailed Data</h4>
+            <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Detailed Data</h4>
             """, 
             unsafe_allow_html=True
         )

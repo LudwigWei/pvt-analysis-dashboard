@@ -34,7 +34,6 @@ def apply_results_css():
         /* --- Fixed Circular Back Button using Marker --- */
         .back-btn-marker { display: none; }
 
-        /* Target the button inside the column that has our specific marker */
         div[data-testid="stColumn"]:has(.back-btn-marker) button {
             border: 1px solid #d3e1ee !important;
             background: #ffffff !important;
@@ -51,7 +50,6 @@ def apply_results_css():
             overflow: hidden !important;
         }
 
-        /* Force Streamlit's internal text wrappers to behave as a single icon glyph */
         div[data-testid="stColumn"]:has(.back-btn-marker) button div,
         div[data-testid="stColumn"]:has(.back-btn-marker) button span,
         div[data-testid="stColumn"]:has(.back-btn-marker) button p {
@@ -61,7 +59,7 @@ def apply_results_css():
             margin: 0 !important;
             line-height: 42px !important;
             white-space: nowrap !important;
-            word-break: keep-all !important; /* CRITICAL: Prevents vertical character stacking */
+            word-break: keep-all !important; 
             letter-spacing: normal !important;
             display: block !important;
             text-align: center !important;
@@ -87,22 +85,23 @@ def apply_results_css():
             font-size: 18px; font-weight: 700; color: #0f2942; margin-bottom: 16px; margin-top: 8px; 
         }
         
-        /* --- Updated Fluid Tag Style --- */
+        /* --- Fluid Tag Style (Side Column) --- */
         .fluid-tag-container { 
             background: #ffffff; 
             border: 1px solid #d3e1ee; 
-            border-radius: 16px; 
-            padding: 24px 28px; 
-            height: 100%; 
+            border-radius: 12px; 
+            padding: 24px; 
+            height: auto; 
             display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(15, 41, 66, 0.02), 0 2px 4px -1px rgba(15, 41, 66, 0.01);
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02);
         }
         .fluid-tag-left {
             display: flex;
             flex-direction: column;
+            width: 100%;
         }
         .fluid-tag-label { 
             font-size: 11px; color: #8ba3b6; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; 
@@ -111,11 +110,57 @@ def apply_results_css():
             font-size: 20px; font-weight: 800; color: #0f2942; line-height: 1.2;
         }
         .fluid-tag-desc { 
-            font-size: 13px; color: #5b7b97; line-height: 1.5; font-weight: 500; text-align: right; max-width: 50%;
+            font-size: 13px; color: #5b7b97; line-height: 1.5; font-weight: 500; text-align: left; margin-top: 12px; width: 100%;
         }
 
         div[data-testid="column"]:has(.fluid-tag-container) {
             display: flex !important;
+            flex-direction: column !important;
+            height: 100% !important;
+        }
+
+        /* --- Equal Height Layout for Chart & Interp Row --- */
+        /* 1. Force the row to stretch */
+        div[data-testid="stHorizontalBlock"]:has(.dash-chart-marker) {
+            align-items: stretch !important;
+        }
+        /* 2. Force columns inside the row to stretch vertically */
+        div[data-testid="stHorizontalBlock"]:has(.dash-chart-marker) > div[data-testid="column"] > div[data-testid="stVerticalBlock"] {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        /* 3. Style the left chart card */
+        div[data-testid="stVerticalBlock"]:has(> div > div > div > div > .dash-chart-marker) {
+            background: #ffffff !important; 
+            border: 1px solid #d3e1ee !important; 
+            border-radius: 12px !important; 
+            padding: 20px !important; 
+            box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02) !important; 
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        /* 4. Make the Interpretation container stretch to fill bottom space */
+        div.element-container:has(.dash-interp-marker) {
+            flex-grow: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            margin-top: 16px !important; /* Replaces the empty spacer div */
+        }
+        .dash-interp-marker {
+            flex-grow: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        /* --- Detailed Data Table Container --- */
+        div[data-testid="stVerticalBlock"]:has(> div > div > div > div > .dash-table-marker) {
+            background: #ffffff !important; 
+            border: 1px solid #d3e1ee !important; 
+            border-radius: 12px !important; 
+            padding: 20px !important; 
+            box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02) !important;
         }
 
         /* Streamlit Tabs */
@@ -142,7 +187,6 @@ def render_results_display() -> None:
     header_col1, header_col2 = st.columns([0.2, 4], gap="small")
     
     with header_col1:
-        # Invisible marker to securely target this specific button with CSS
         st.markdown('<div class="back-btn-marker"></div>', unsafe_allow_html=True)
         st.button("arrow_back", on_click=navigate_to_inputs)
         

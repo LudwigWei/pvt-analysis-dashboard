@@ -5,7 +5,6 @@ from components.interpretations import build_interpretations
 from components.property_table import render_property_table
 
 def render_hero_kpi(label: str, value: str, unit: str, icon: str = "bubble_chart") -> str:
-    """Renders a prominent, gradient Hero card with a modern shadow."""
     return f"""
     <div style="background: linear-gradient(135deg, #006fbb 0%, #005a96 100%); 
                 border-radius: 16px; padding: 24px 32px; 
@@ -24,22 +23,10 @@ def render_hero_kpi(label: str, value: str, unit: str, icon: str = "bubble_chart
     """
 
 def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_info: dict, snapshot: dict, analysis_key: str):
-    """Bespoke UI Layout specifically designed for Bubble Point Analysis."""
     
-    # --- 1. Top Section: Hero & Classification ---
+    # --- 1. The Hero Section ---
     st.markdown(render_hero_kpi("Calculated Bubble Point", f"{inputs.bubble_point_psia:,.0f}", "psia"), unsafe_allow_html=True)
-    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"""
-        <div class="fluid-tag-container">
-            <div class="fluid-tag-left">
-                <div class="fluid-tag-label">Fluid Identity</div>
-                <div class="fluid-tag-value">{fluid_info['name']}</div>
-            </div>
-            <div class="fluid-tag-desc">{fluid_info['desc']}</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 32px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
     
     # --- 2. Key Properties Row ---
     st.markdown("<div class='results-section-title'>Key Saturated Properties</div>", unsafe_allow_html=True)
@@ -47,7 +34,6 @@ def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_inf
     if rows_data:
         pb_data = rows_data[0]
         kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
-        # Using a helper for consistent small KPIs
         from components.results_display import render_kpi_card
         with kpi_col1:
             st.markdown(render_kpi_card("Oil FVF (Bo)", f"{pb_data['Bo (RB/STB)']:.4f}", "RB/STB"), unsafe_allow_html=True)
@@ -70,28 +56,39 @@ def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_inf
             colorway=['#006fbb'],
             margin=dict(t=40, b=40, l=40, r=40)
         )
-        # Using a native container to act as our card wrapper
         with st.container():
             st.markdown(
                 """
                 <style>
-                /* Style the container's parent block to look like a card */
                 div[data-testid="stVerticalBlock"]:has(> div > div > div > div > .bubble-chart-marker) {
                     background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;
                 }
                 </style>
                 <div class="bubble-chart-marker"></div>
-                <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Visualization</h4>
+                <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Visualization</h4>
                 """, 
                 unsafe_allow_html=True
             )
             st.plotly_chart(fig, use_container_width=True)
 
     with col_interp:
-        # Build the whole HTML string before rendering to avoid auto-closing tags
+        # Fluid Identity Card (Stacked above Interpretation)
+        st.markdown(f"""
+            <div class="fluid-tag-container">
+                <div class="fluid-tag-left">
+                    <div class="fluid-tag-label">Fluid Identity</div>
+                    <div class="fluid-tag-value">{fluid_info['name']}</div>
+                </div>
+                <div class="fluid-tag-desc">{fluid_info['desc']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+
+        # Interpretation Card
         interp_html = """
-        <div style='background: #fafcff; border: 1px solid #d3e1ee; border-top: 4px solid #006fbb; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
-            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Interpretation</h4>
+        <div style='background: #fafcff; border: 1px solid #d3e1ee; border-top: 4px solid #006fbb; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); flex-grow: 1; display: flex; flex-direction: column;'>
+            <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Interpretation</h4>
             <ul style='color: #2d4356; font-weight: 500; line-height: 1.7; font-size: 15px; padding-left: 20px; margin: 0;'>
         """
         for text in build_interpretations(analysis_key, rows_data, snapshot):
@@ -112,7 +109,7 @@ def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_inf
             }
             </style>
             <div class="bubble-table-marker"></div>
-            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Detailed Data</h4>
+            <h4 style='font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #5b7b97; border-bottom: 1px solid #d3e1ee; padding-bottom: 12px; margin-top: 0; margin-bottom: 16px;'>Detailed Data</h4>
             """, 
             unsafe_allow_html=True
         )
