@@ -27,19 +27,17 @@ def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_inf
     """Bespoke UI Layout specifically designed for Bubble Point Analysis."""
     
     # --- 1. Top Section: Hero & Classification ---
-    col_hero, col_fluid = st.columns([1.6, 1])
-    
-    with col_hero:
-        st.markdown(render_hero_kpi("Calculated Bubble Point", f"{inputs.bubble_point_psia:,.0f}", "psia"), unsafe_allow_html=True)
-        
-    with col_fluid:
-        st.markdown(f"""
-            <div class="fluid-tag-container">
+    st.markdown(render_hero_kpi("Calculated Bubble Point", f"{inputs.bubble_point_psia:,.0f}", "psia"), unsafe_allow_html=True)
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="fluid-tag-container">
+            <div class="fluid-tag-left">
                 <div class="fluid-tag-label">Fluid Identity</div>
                 <div class="fluid-tag-value">{fluid_info['name']}</div>
-                <div class="fluid-tag-desc">{fluid_info['desc']}</div>
             </div>
-        """, unsafe_allow_html=True)
+            <div class="fluid-tag-desc">{fluid_info['desc']}</div>
+        </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("<div style='height: 32px;'></div>", unsafe_allow_html=True)
     
@@ -62,7 +60,7 @@ def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_inf
 
     # --- 3. Dashboard Layout (Chart & Interpretation) ---
     col_chart, col_interp = st.columns([2, 1])
-    
+
     with col_chart:
         fig = build_chart(analysis_key, rows_data, inputs.api, inputs.gas_gravity, inputs.temp_f, inputs.reservoir_pressure_psia)
         fig.update_layout(
@@ -72,23 +70,50 @@ def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_inf
             colorway=['#006fbb'],
             margin=dict(t=40, b=40, l=40, r=40)
         )
-        st.plotly_chart(fig, use_container_width=True)
+        # Using a native container to act as our card wrapper
+        with st.container():
+            st.markdown(
+                """
+                <style>
+                /* Style the container's parent block to look like a card */
+                div[data-testid="stVerticalBlock"]:has(> div > div > div > div > .bubble-chart-marker) {
+                    background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;
+                }
+                </style>
+                <div class="bubble-chart-marker"></div>
+                <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Visualization</h4>
+                """, 
+                unsafe_allow_html=True
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     with col_interp:
-        st.markdown(
-            """
-            <div style='background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
-                <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>💡 Interpretation</h4>
-                <ul style='color: #5b7b97; line-height: 1.6; font-size: 14px; padding-left: 20px; margin: 0;'>
-            """, 
-            unsafe_allow_html=True
-        )
+        # Build the whole HTML string before rendering to avoid auto-closing tags
+        interp_html = """
+        <div style='background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
+            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Interpretation</h4>
+            <ul style='color: #5b7b97; line-height: 1.6; font-size: 14px; padding-left: 20px; margin: 0;'>
+        """
         for text in build_interpretations(analysis_key, rows_data, snapshot):
-            st.markdown(f"<li style='margin-bottom: 8px;'>{text}</li>", unsafe_allow_html=True)
-        st.markdown("</ul></div>", unsafe_allow_html=True)
+            interp_html += f"<li style='margin-bottom: 8px;'>{text}</li>"
+        interp_html += "</ul></div>"
+        
+        st.markdown(interp_html, unsafe_allow_html=True)
 
     st.markdown("<div style='height: 32px;'></div>", unsafe_allow_html=True)
 
     # --- 4. Detailed Data Table ---
-    st.markdown("<div class='results-section-title' style='margin-bottom: 16px; font-size: 18px; font-weight: 600; color: #0f2942;'>📋 Detailed Data</div>", unsafe_allow_html=True)
-    render_property_table(rows_data)
+    with st.container():
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stVerticalBlock"]:has(> div > div > div > div > .bubble-table-marker) {
+                background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02);
+            }
+            </style>
+            <div class="bubble-table-marker"></div>
+            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Detailed Data</h4>
+            """, 
+            unsafe_allow_html=True
+        )
+        render_property_table(rows_data)

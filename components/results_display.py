@@ -31,45 +31,55 @@ def apply_results_css():
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24..48,100..700,0..1,-50..200');
         
-        /* --- Fixed Circular Back Button --- */
-        div[data-testid="stColumn"]:has(button[key="back_btn"]) button {
+        /* --- Fixed Circular Back Button using Marker --- */
+        .back-btn-marker { display: none; }
+
+        /* Target the button inside the column that has our specific marker */
+        div[data-testid="stColumn"]:has(.back-btn-marker) button {
             border: 1px solid #d3e1ee !important;
             background: #ffffff !important;
             border-radius: 50% !important;
             width: 42px !important;
             height: 42px !important;
             min-width: 42px !important;
+            max-width: 42px !important;
             padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             transition: all 0.2s ease !important;
+            overflow: hidden !important;
         }
 
-        div[data-testid="stColumn"]:has(button[key="back_btn"]) button span,
-        div[data-testid="stColumn"]:has(button[key="back_btn"]) button p {
+        /* Force Streamlit's internal text wrappers to behave as a single icon glyph */
+        div[data-testid="stColumn"]:has(.back-btn-marker) button div,
+        div[data-testid="stColumn"]:has(.back-btn-marker) button span,
+        div[data-testid="stColumn"]:has(.back-btn-marker) button p {
             font-family: 'Material Symbols Outlined' !important;
             font-size: 24px !important;
             color: #5b7b97 !important;
             margin: 0 !important;
-            line-height: 1 !important;
+            line-height: 42px !important;
             white-space: nowrap !important;
-            display: inline-block !important;
+            word-break: keep-all !important; /* CRITICAL: Prevents vertical character stacking */
+            letter-spacing: normal !important;
+            display: block !important;
+            text-align: center !important;
         }
 
-        div[data-testid="stColumn"]:has(button[key="back_btn"]) button:hover {
+        div[data-testid="stColumn"]:has(.back-btn-marker) button:hover {
             border-color: #006fbb !important;
             background: #eaf4fb !important;
             transform: translateX(-2px);
             box-shadow: 0 4px 12px rgba(0, 111, 187, 0.1) !important;
         }
         
-        div[data-testid="stColumn"]:has(button[key="back_btn"]) button:hover span,
-        div[data-testid="stColumn"]:has(button[key="back_btn"]) button:hover p {
+        div[data-testid="stColumn"]:has(.back-btn-marker) button:hover p,
+        div[data-testid="stColumn"]:has(.back-btn-marker) button:hover span {
             color: #006fbb !important;
         }
 
-        div[data-testid="stHorizontalBlock"]:has(button[key="back_btn"]) {
+        div[data-testid="stHorizontalBlock"]:has(.back-btn-marker) {
             align-items: center !important;
         }
 
@@ -85,18 +95,23 @@ def apply_results_css():
             padding: 24px 28px; 
             height: 100%; 
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
             box-shadow: 0 4px 6px -1px rgba(15, 41, 66, 0.02), 0 2px 4px -1px rgba(15, 41, 66, 0.01);
         }
+        .fluid-tag-left {
+            display: flex;
+            flex-direction: column;
+        }
         .fluid-tag-label { 
-            font-size: 11px; color: #8ba3b6; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; 
+            font-size: 11px; color: #8ba3b6; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; 
         }
         .fluid-tag-value { 
             font-size: 20px; font-weight: 800; color: #0f2942; line-height: 1.2;
         }
         .fluid-tag-desc { 
-            font-size: 13px; color: #5b7b97; margin-top: 8px; line-height: 1.5; font-weight: 500;
+            font-size: 13px; color: #5b7b97; line-height: 1.5; font-weight: 500; text-align: right; max-width: 50%;
         }
 
         div[data-testid="column"]:has(.fluid-tag-container) {
@@ -127,7 +142,9 @@ def render_results_display() -> None:
     header_col1, header_col2 = st.columns([0.2, 4], gap="small")
     
     with header_col1:
-        st.button("arrow_back", on_click=navigate_to_inputs, key="back_btn")
+        # Invisible marker to securely target this specific button with CSS
+        st.markdown('<div class="back-btn-marker"></div>', unsafe_allow_html=True)
+        st.button("arrow_back", on_click=navigate_to_inputs)
         
     with header_col2:
         st.markdown(f"""

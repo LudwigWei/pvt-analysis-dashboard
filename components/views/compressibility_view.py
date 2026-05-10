@@ -35,23 +35,21 @@ def render_compressibility_view(inputs: PVTInputs, rows_data: list[dict], fluid_
     """Bespoke UI Layout specifically designed for Isothermal Compressibility Analysis."""
     
     # --- 1. The Hero Section ---
-    col_hero, col_fluid = st.columns([1.5, 1])
-    
     # Extract co at reservoir pressure
     res_co = rows_data[0]['co (psi-1)'] if rows_data else 0.0
     
-    with col_hero:
-        # Note: Using scientific notation for co is standard in the industry
-        st.markdown(render_hero_kpi("Compressibility @ Pr", f"{res_co:.2e}", "psi⁻¹", "compress"), unsafe_allow_html=True)
-        
-    with col_fluid:
-        st.markdown(f"""
-            <div class="fluid-tag-container">
+    # Note: Using scientific notation for co is standard in the industry
+    st.markdown(render_hero_kpi("Compressibility @ Pr", f"{res_co:.2e}", "psi⁻¹", "compress"), unsafe_allow_html=True)
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="fluid-tag-container">
+            <div class="fluid-tag-left">
                 <div class="fluid-tag-label">Reservoir Energy</div>
                 <div class="fluid-tag-value">{fluid_info['name']}</div>
-                <div class="fluid-tag-desc">Determines the volume of oil expansion per unit pressure drop. Critical for undersaturated drive analysis.</div>
             </div>
-        """, unsafe_allow_html=True)
+            <div class="fluid-tag-desc">Determines the volume of oil expansion per unit pressure drop. Critical for undersaturated drive analysis.</div>
+        </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
     
@@ -85,23 +83,48 @@ def render_compressibility_view(inputs: PVTInputs, rows_data: list[dict], fluid_
             colorway=['#6366f1'], # Indigo for Compressibility
             margin=dict(t=40, b=40, l=40, r=40)
         )
-        st.plotly_chart(fig, use_container_width=True)
+        
+        with st.container():
+            st.markdown(
+                """
+                <style>
+                div[data-testid="stVerticalBlock"]:has(> div > div > div > div > .comp-chart-marker) {
+                    background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;
+                }
+                </style>
+                <div class="comp-chart-marker"></div>
+                <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Compressibility Chart</h4>
+                """, 
+                unsafe_allow_html=True
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     with col_interp:
-        st.markdown(
-            """
-            <div style='background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
-                <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>💡 Interpretation</h4>
-                <ul style='color: #5b7b97; line-height: 1.6; font-size: 14px; padding-left: 20px; margin: 0;'>
-            """, 
-            unsafe_allow_html=True
-        )
+        interp_html = """
+        <div style='background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
+            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Interpretation</h4>
+            <ul style='color: #5b7b97; line-height: 1.6; font-size: 14px; padding-left: 20px; margin: 0;'>
+        """
         for text in build_interpretations(analysis_key, rows_data, snapshot):
-            st.markdown(f"<li style='margin-bottom: 8px;'>{text}</li>", unsafe_allow_html=True)
-        st.markdown("</ul></div>", unsafe_allow_html=True)
+            interp_html += f"<li style='margin-bottom: 8px;'>{text}</li>"
+        interp_html += "</ul></div>"
+        
+        st.markdown(interp_html, unsafe_allow_html=True)
 
     st.markdown("<div style='height: 32px;'></div>", unsafe_allow_html=True)
 
     # --- 4. Detailed Data Table ---
-    st.markdown("<div class='results-section-title' style='margin-bottom: 16px; font-size: 18px; font-weight: 600; color: #0f2942;'>📋 Detailed Data</div>", unsafe_allow_html=True)
-    render_property_table(rows_data)
+    with st.container():
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stVerticalBlock"]:has(> div > div > div > div > .comp-table-marker) {
+                background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02);
+            }
+            </style>
+            <div class="comp-table-marker"></div>
+            <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Detailed Data</h4>
+            """, 
+            unsafe_allow_html=True
+        )
+        render_property_table(rows_data)
