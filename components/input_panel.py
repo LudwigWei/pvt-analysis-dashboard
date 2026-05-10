@@ -72,6 +72,7 @@ def render_input_panel() -> None:
         div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child::before {
             font-family: 'Material Symbols Outlined';
             font-size: 26px;
+            color: #8ba3b6; /* Muted default color */
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             grid-column: 1;
             grid-row: 1 / span 2;
@@ -81,9 +82,13 @@ def render_input_panel() -> None:
             transition: all 0.2s ease;
         }
 
-        /* Active states fill the icon in */
+        /* Hover & Active states change icon color and fill it in */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover > div:last-child::before {
+            color: #006fbb;
+        }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] > div:last-child::before,
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) > div:last-child::before {
+            color: #006fbb;
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
@@ -97,21 +102,17 @@ def render_input_panel() -> None:
             margin-top: 4px;
         }
 
-        /* --- Content Injection & Distinct Thematic Colors per Option --- */
-        /* 1. Bubble Point (Cerulean) */
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::before { content: "bubble_chart"; color: #0ea5e9; }
+        /* Content Injection per Option (Using Material Ligatures) */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::before { content: "bubble_chart"; }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::after { content: "Gas expansion & oil shrinkage limits"; }
 
-        /* 2. Viscosity (Royal Blue) */
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::before { content: "water_drop"; color: #3b82f6; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::before { content: "water_drop"; }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::after { content: "Fluid mobility & flow resistance"; }
 
-        /* 3. Compressibility (Indigo) */
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::before { content: "compress"; color: #6366f1; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::before { content: "compress"; }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::after { content: "Volumetric change under pressure"; }
 
-        /* 4. Phase Envelope (Teal) */
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::before { content: "area_chart"; color: #14b8a6; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::before { content: "area_chart"; }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::after { content: "P-T thermodynamic boundaries"; }
 
 
