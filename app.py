@@ -9,9 +9,9 @@ def apply_base_styles() -> None:
     st.markdown(
         """
         <style>
-        /* Ensure the main background color stays light gray */
+        /* Ensure the main background color stays pure white */
         .stApp {
-            background-color: #f8fafc;
+            background-color: #ffffff;
         }
 
         /* Hide the default Streamlit header (Deploy button, menu, etc.) */
@@ -83,6 +83,22 @@ def apply_base_styles() -> None:
             box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
         }
 
+        /* Bento-Style Card Containers */
+        div[data-testid="stVerticalBlock"]:has(> div.element-container .bento-card-marker) {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 10px 24px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+            margin-bottom: 24px;
+        }
+
+        /* Hide Number Input Steppers */
+        button[data-testid="stNumberInputStepDown"],
+        button[data-testid="stNumberInputStepUp"] {
+            display: none !important;
+        }
+
         /* Input Panel Typography and Elements */
         .panel-title {
             color: #64748b;
@@ -92,9 +108,9 @@ def apply_base_styles() -> None:
             margin: 2px 2px 14px 2px;
         }
         .field-label {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
-            color: #334155;
+            color: #64748b;
             margin-bottom: 4px;
         }
         .divider {
@@ -102,20 +118,41 @@ def apply_base_styles() -> None:
             margin: 10px 0 12px 0;
         }
         
-        /* Streamlit Inputs and Buttons */
-        .stNumberInput input, .stSelectbox > div > div {
-            background: #f8fafc !important;
-            color: #0f172a !important;
-            border: 1px solid #cbd5e1 !important;
+        /* Premium Streamlit Number Inputs & Dropdowns */
+        .stNumberInput div[data-baseweb="input"] {
+            background-color: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
             border-radius: 8px !important;
+            padding: 0 !important;
+            overflow: hidden;
         }
-        .stNumberInput input {
-            padding: 10px 12px !important;
-        }
-        .stNumberInput input:focus, .stSelectbox > div > div:focus-within {
+        .stNumberInput div[data-baseweb="input"]:focus-within {
             border-color: #0284c7 !important;
             box-shadow: 0 0 0 1px #0284c7 !important;
         }
+        /* Remove internal borders or separation artifacts */
+        .stNumberInput div[data-baseweb="base-input"] {
+            background-color: transparent !important;
+            border: none !important;
+        }
+        .stNumberInput input {
+            color: #0f172a !important;
+            font-weight: 500 !important;
+            padding: 8px 12px !important;
+            background-color: transparent !important;
+        }
+
+        .stSelectbox > div > div {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+        }
+        .stSelectbox > div > div:focus-within {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 1px #0284c7 !important;
+        }
+
         .stButton > button {
             border-radius: 8px !important;
             border: 1px solid #cbd5e1 !important;
@@ -135,12 +172,12 @@ def apply_base_styles() -> None:
         .stButton > button:hover:not([data-testid="baseButton-primary"]) {
             border-color: #94a3b8 !important;
             color: #0f172a !important;
-            background: #f8fafc !important;
+            background: #f1f5f9 !important;
         }
 
         /* Main Analysis & Results typography */
         .analysis-header {
-            background: #f8fafc;
+            background: #ffffff;
             color: #0f172a;
             padding: 8px 12px;
             border-radius: 10px;
@@ -242,11 +279,10 @@ init_state()
 apply_base_styles()
 render_header()
 
-# The main layout. 1 to 2.5 ratio gives the right side a nice breathing room!
-left_col, right_col = st.columns([1, 2.5], gap="large")
+# Route based on the current view state
+current_view = st.session_state.get("current_view", "inputs")
 
-with left_col:
+if current_view == "inputs":
     render_input_panel()
-
-with right_col:
+else:
     render_results_display()

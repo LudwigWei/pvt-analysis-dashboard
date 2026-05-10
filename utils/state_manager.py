@@ -10,6 +10,7 @@ DEFAULT_INPUTS = {
     "current_analysis": "bubble_point",
     "calculated": False,
     "input_snapshot": {},
+    "current_view": "inputs",
 }
 
 INPUT_KEYS = [
@@ -40,6 +41,11 @@ def capture_inputs() -> None:
         key: float(st.session_state.get(key, 0.0)) for key in INPUT_KEYS
     }
     st.session_state.calculated = True
+    st.session_state.current_view = "results"
+
+
+def navigate_to_inputs() -> None:
+    st.session_state.current_view = "inputs"
 
 
 def mark_dirty() -> None:
