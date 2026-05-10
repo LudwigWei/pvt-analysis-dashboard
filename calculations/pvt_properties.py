@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import List
 
@@ -16,22 +17,22 @@ class PVTInputs:
 
 def calc_rs(api: float, gas_gravity: float, temp_rankine: float, pressure_psia: float) -> float:
     x = 0.0125 * api - 0.00091 * (temp_rankine - 460.0)
-    rs = gas_gravity * ((pressure_psia / 18.2 + 1.4) * (10 ** x)) ** 1.205
-    return max(rs, 0.0)
+    val = gas_gravity * math.pow((pressure_psia / 18.2 + 1.4) * math.pow(10.0, x), 1.205)
+    return max(val, 0.0)
 
 
 def calc_bo(api: float, gas_gravity: float, rs: float, temp_rankine: float) -> float:
     go = api / (131.5 + api)
-    f = rs * (gas_gravity / go) ** 0.5 + 1.25 * (temp_rankine - 460.0)
-    return 0.9759 + 0.000120 * (f ** 1.2)
+    f = rs * math.sqrt(gas_gravity / go) + 1.25 * (temp_rankine - 460.0)
+    return 0.9759 + 0.000120 * math.pow(f, 1.2)
 
 
 def calc_muo(api: float, temp_rankine: float, rs: float) -> float:
-    x = (temp_rankine - 460.0) ** -1.163 * (2.718281828 ** (6.9824 - 0.04463 * api))
-    dead = 10 ** x - 1.0
-    a = 10.715 * (rs + 100.0) ** -0.515
-    b = 5.44 * (rs + 150.0) ** -0.338
-    return max(a * (max(dead, 0.001) ** b), 0.01)
+    x = math.pow(temp_rankine - 460.0, -1.163) * math.exp(6.9824 - 0.04463 * api)
+    dead = math.pow(10.0, x) - 1.0
+    a = 10.715 * math.pow(rs + 100.0, -0.515)
+    b = 5.44 * math.pow(rs + 150.0, -0.338)
+    return max(a * math.pow(max(dead, 0.001), b), 0.01)
 
 
 def calc_co(api: float, gas_gravity: float, rs: float, temp_rankine: float, pressure_psia: float, bo: float) -> float:
@@ -46,7 +47,7 @@ def calc_pseudocritical(gas_gravity: float) -> tuple[float, float]:
 
 
 def calc_z(ppr: float, tpr: float) -> float:
-    z = 1.0 - (3.52 * ppr) / (10 ** (0.9813 * tpr)) + (0.274 * ppr * ppr) / (10 ** (0.8157 * tpr))
+    z = 1.0 - (3.52 * ppr) / math.pow(10.0, 0.9813 * tpr) + (0.274 * ppr * ppr) / math.pow(10.0, 0.8157 * tpr)
     return max(z, 0.1)
 
 
@@ -57,10 +58,10 @@ def calc_bg(temp_rankine: float, pressure_psia: float, z: float) -> float:
 def calc_mug(temp_rankine: float, pressure_psia: float, gas_gravity: float, z: float) -> float:
     mg = 28.97 * gas_gravity
     rho = (pressure_psia * mg) / (z * 10.73 * temp_rankine)
-    k = ((9.4 + 0.02 * mg) * temp_rankine ** 1.5) / (209.0 + 19.0 * mg + temp_rankine)
+    k = ((9.4 + 0.02 * mg) * math.pow(temp_rankine, 1.5)) / (209.0 + 19.0 * mg + temp_rankine)
     x = 3.5 + 986.0 / temp_rankine + 0.01 * mg
     y = 2.4 - 0.2 * x
-    return max(1.0e-4 * k * (2.718281828 ** (x * (max(rho / 62.4, 0.001) ** y))), 0.005)
+    return max(1.0e-4 * k * math.exp(x * math.pow(max(rho / 62.4, 0.001), y)), 0.005)
 
 
 def generate_rows(inputs: PVTInputs, steps: int = 15) -> List[dict]:
@@ -69,8 +70,8 @@ def generate_rows(inputs: PVTInputs, steps: int = 15) -> List[dict]:
     tpr = t_rankine / tpc
 
     rows = []
-    # Always start simulation from the actual Reservoir Pressure
-    max_pressure = max(inputs.reservoir_pressure_psia, inputs.bubble_point_psia)
+    # Pressure steps down from Bubble Point to 100 psia
+    max_pressure = inputs.bubble_point_psia
     
     for i in range(steps + 1):
         pressure = max(max_pressure * (1.0 - i / steps), 100.0)
@@ -83,13 +84,6 @@ def generate_rows(inputs: PVTInputs, steps: int = 15) -> List[dict]:
         muo = calc_muo(inputs.api, t_rankine, rs)
         co = calc_co(inputs.api, inputs.gas_gravity, rs, t_rankine, pressure, bo)
         
-        # --- Undersaturated Adjustments ---
-        if pressure > inputs.bubble_point_psia:
-            # Bo shrinks slightly as pressure increases above Pb
-            bo = bo * (1.0 - co * (pressure - inputs.bubble_point_psia))
-            # Viscosity increases slightly as pressure increases above Pb
-            muo = muo * ((pressure / inputs.bubble_point_psia) ** 0.25)
-
         z = calc_z(pressure / ppc, tpr)
         bg = calc_bg(t_rankine, pressure, z)
         mug = calc_mug(t_rankine, pressure, inputs.gas_gravity, z)
