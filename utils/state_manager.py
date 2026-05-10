@@ -10,6 +10,9 @@ DEFAULT_INPUTS = {
     "current_analysis": "bubble_point",
     "calculated": False,
     "input_snapshot": {},
+    "current_view": "inputs",
+    "show_skeleton": False,
+    "show_splash": True, # <-- Controls the initial app load animation
 }
 
 INPUT_KEYS = [
@@ -33,6 +36,7 @@ def reset_state() -> None:
         st.session_state[key] = value
     st.session_state.calculated = False
     st.session_state.input_snapshot = {}
+    st.session_state.show_splash = False # <-- Prevent splashing when resetting inputs
 
 
 def capture_inputs() -> None:
@@ -40,6 +44,12 @@ def capture_inputs() -> None:
         key: float(st.session_state.get(key, 0.0)) for key in INPUT_KEYS
     }
     st.session_state.calculated = True
+    st.session_state.current_view = "results"
+    st.session_state.show_skeleton = True
+
+
+def navigate_to_inputs() -> None:
+    st.session_state.current_view = "inputs"
 
 
 def mark_dirty() -> None:
