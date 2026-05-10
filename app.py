@@ -7,67 +7,105 @@ from utils.state_manager import init_state
 
 
 def render_splash_screen() -> None:
-    """Renders a full-screen, premium splash overlay."""
+    """Renders an ultra-premium, frameless splash overlay with just the animated icon."""
     st.markdown(
         """
         <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24..48,100..700,0..1,-50..200');
         
+        /* --- Deep Layered Background --- */
         .splash-container {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(135deg, #006fbb 0%, #0f2942 100%);
+            background: linear-gradient(135deg, #f4f8fb 0%, #eaf4fb 50%, #ffffff 100%);
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            z-index: 999999; /* Force it above everything else */
-            color: white;
+            z-index: 999999;
             font-family: "Inter", sans-serif;
+            overflow: hidden;
         }
-        .splash-logo-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 16px 28px;
-            border-radius: 16px;
-            display: flex; align-items: center; gap: 16px;
-            margin-bottom: 24px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        .splash-logo-text {
-            font-size: 48px; font-weight: 800; letter-spacing: 2px; line-height: 1;
-        }
-        .splash-subtitle {
-            font-size: 14px; font-weight: 600; color: #8ba3b6; letter-spacing: 3px; text-transform: uppercase;
-        }
-        .splash-loader {
-            margin-top: 48px;
-            width: 40px; height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-bottom-color: #ffffff;
+
+        /* Ambient glowing orb */
+        .splash-glow {
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 111, 187, 0.08) 0%, transparent 60%);
             border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: splash-rotation 1s linear infinite;
+            z-index: 1;
+            animation: breathe-glow 4s ease-in-out infinite alternate;
+            pointer-events: none;
         }
-        @keyframes splash-rotation {
+
+        @keyframes breathe-glow {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        /* --- Frameless Content Wrapper --- */
+        .splash-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: fade-up-splash 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fade-up-splash {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Orbital Loader + Icon --- */
+        .loader-wrapper {
+            position: relative;
+            width: 80px; height: 80px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .orbital-ring {
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 111, 187, 0.1);
+            border-top-color: #006fbb;
+            border-right-color: rgba(0, 111, 187, 0.4);
+            animation: spin-ring 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+        }
+
+        .water-drop-icon {
+            font-size: 40px;
+            color: #006fbb;
+            animation: pulse-drop 2.4s ease-in-out infinite;
+        }
+
+        @keyframes spin-ring {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-drop {
+            0%, 100% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; drop-shadow: 0 4px 12px rgba(0,111,187,0.2); }
         }
         </style>
         
         <div class="splash-container">
-            <div class="splash-logo-box">
-                <span class="material-symbols-outlined" style="font-size: 56px; font-variation-settings: 'FILL' 1;">water_drop</span>
-                <span class="splash-logo-text">PVT</span>
+            <div class="splash-glow"></div>
+            <div class="splash-content">
+                <div class="loader-wrapper">
+                    <div class="orbital-ring"></div>
+                    <span class="material-symbols-outlined water-drop-icon" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+                </div>
             </div>
-            <div class="splash-subtitle">Analysis System</div>
-            <div class="splash-loader"></div>
         </div>
         """,
         unsafe_allow_html=True
     )
-
-
+    
 def apply_base_styles() -> None:
     st.markdown(
         """
