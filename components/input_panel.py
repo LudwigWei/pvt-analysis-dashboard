@@ -72,24 +72,19 @@ def render_input_panel() -> None:
         div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child::before {
             font-family: 'Material Symbols Outlined';
             font-size: 26px;
-            color: #8ba3b6; /* Muted default color */
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            /* Making them solid and slightly bolder to match the image */
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
             grid-column: 1;
             grid-row: 1 / span 2;
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease;
         }
 
-        /* Hover & Active states change icon color and fill it in */
+        /* Hover states add a subtle pop instead of overwriting the color */
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover > div:last-child::before {
-            color: #006fbb;
-        }
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] > div:last-child::before,
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) > div:last-child::before {
-            color: #006fbb;
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            transform: scale(1.1);
         }
 
         /* Subtitle Placement */
@@ -102,17 +97,29 @@ def render_input_panel() -> None:
             margin-top: 4px;
         }
 
-        /* Content Injection per Option (Using Material Ligatures) */
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::before { content: "bubble_chart"; }
+        /* --- Content & COLOR Injection per Option --- */
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::before { 
+            content: "bubble_chart"; 
+            color: #0ea5e9; /* Sky Blue */
+        }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(1) > div:last-child::after { content: "Gas expansion & oil shrinkage limits"; }
 
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::before { content: "water_drop"; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::before { 
+            content: "water_drop"; 
+            color: #3b82f6; /* Royal Blue */
+        }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(2) > div:last-child::after { content: "Fluid mobility & flow resistance"; }
 
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::before { content: "compress"; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::before { 
+            content: "compress"; 
+            color: #6366f1; /* Indigo */
+        }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(3) > div:last-child::after { content: "Volumetric change under pressure"; }
 
-        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::before { content: "area_chart"; }
+        div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::before { 
+            content: "area_chart"; 
+            color: #14b8a6; /* Teal */
+        }
         div[data-testid="stRadio"] > div[role="radiogroup"] > label:nth-child(4) > div:last-child::after { content: "P-T thermodynamic boundaries"; }
 
 
@@ -183,7 +190,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>°API</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("API Gravity", min_value=1.0, max_value=100.0, step=0.1, key="api_gravity", format="%g", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("API Gravity", min_value=1.0, max_value=100.0, step=0.1, key="api_gravity", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 1 - 100</div>", unsafe_allow_html=True)
             
             st.markdown("""
@@ -192,7 +199,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>Air=1</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Gas Gravity", min_value=0.5, max_value=1.5, step=0.01, key="gas_gravity", format="%g", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Gas Gravity", min_value=0.5, max_value=1.5, step=0.01, key="gas_gravity", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 0.5 - 1.5</div>", unsafe_allow_html=True)
 
             st.markdown("""
@@ -201,7 +208,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>°F</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Temperature", min_value=50.0, max_value=400.0, step=1.0, key="reservoir_temp_f", format="%g", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Temperature", min_value=50.0, max_value=400.0, step=1.0, key="reservoir_temp_f", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 50 - 400</div>", unsafe_allow_html=True)
 
         with p_col2:
@@ -211,7 +218,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>psia</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Reservoir Pressure", min_value=100.0, max_value=10000.0, step=1.0, key="reservoir_pressure_psia", format="%g", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Reservoir Pressure", min_value=100.0, max_value=10000.0, step=1.0, key="reservoir_pressure_psia", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 100 - 10,000</div>", unsafe_allow_html=True)
             
             st.markdown("""
@@ -220,7 +227,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>psia</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Separator Press.", min_value=50.0, max_value=5000.0, step=1.0, key="separator_pressure_psia", format="%g", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Separator Press.", min_value=50.0, max_value=5000.0, step=1.0, key="separator_pressure_psia", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 50 - 5,000</div>", unsafe_allow_html=True)
             
             st.markdown("""
@@ -229,7 +236,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>scf/STB</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Producing GOR", min_value=0.0, max_value=200000.0, step=10.0, key="producing_gor_scfstb", format="%g", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Producing GOR", min_value=0.0, max_value=200000.0, step=10.0, key="producing_gor_scfstb", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 0 - 200,000</div>", unsafe_allow_html=True)
 
     with col_side:
