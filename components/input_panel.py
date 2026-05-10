@@ -183,7 +183,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>°API</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("API Gravity", min_value=1.0, max_value=100.0, step=0.1, key="api_gravity", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("API Gravity", min_value=1.0, max_value=100.0, step=0.1, key="api_gravity", format="%g", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 1 - 100</div>", unsafe_allow_html=True)
             
             st.markdown("""
@@ -192,7 +192,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>Air=1</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Gas Gravity", min_value=0.5, max_value=1.5, step=0.01, key="gas_gravity", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Gas Gravity", min_value=0.5, max_value=1.5, step=0.01, key="gas_gravity", format="%g", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 0.5 - 1.5</div>", unsafe_allow_html=True)
 
             st.markdown("""
@@ -201,7 +201,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>°F</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Temperature", min_value=50.0, max_value=400.0, step=1.0, key="reservoir_temp_f", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Temperature", min_value=50.0, max_value=400.0, step=1.0, key="reservoir_temp_f", format="%g", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 50 - 400</div>", unsafe_allow_html=True)
 
         with p_col2:
@@ -211,7 +211,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>psia</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Reservoir Pressure", min_value=100.0, max_value=10000.0, step=1.0, key="reservoir_pressure_psia", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Reservoir Pressure", min_value=100.0, max_value=10000.0, step=1.0, key="reservoir_pressure_psia", format="%g", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 100 - 10,000</div>", unsafe_allow_html=True)
             
             st.markdown("""
@@ -220,7 +220,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>psia</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Separator Press.", min_value=50.0, max_value=5000.0, step=1.0, key="separator_pressure_psia", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Separator Press.", min_value=50.0, max_value=5000.0, step=1.0, key="separator_pressure_psia", format="%g", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 50 - 5,000</div>", unsafe_allow_html=True)
             
             st.markdown("""
@@ -229,7 +229,7 @@ def render_input_panel() -> None:
                     <span class='field-unit'>scf/STB</span>
                 </div>
             """, unsafe_allow_html=True)
-            st.number_input("Producing GOR", min_value=0.0, max_value=200000.0, step=10.0, key="producing_gor_scfstb", label_visibility="collapsed", on_change=mark_dirty)
+            st.number_input("Producing GOR", min_value=0.0, max_value=200000.0, step=10.0, key="producing_gor_scfstb", format="%g", label_visibility="collapsed", on_change=mark_dirty)
             st.markdown("<div class='field-hint-bottom'>Range: 0 - 200,000</div>", unsafe_allow_html=True)
 
     with col_side:
