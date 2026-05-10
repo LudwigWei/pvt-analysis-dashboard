@@ -6,11 +6,11 @@ from calculations.bubble_point import bubble_point_pressure
 from components.analysis_constants import ANALYSIS_LABELS
 from utils.state_manager import navigate_to_inputs
 
-# Import your new modular views
+# Import modular views
 from components.views.bubble_point_view import render_bubble_point_view
-# from components.views.viscosity_view import render_viscosity_view
-# from components.views.compressibility_view import render_compressibility_view
-# from components.views.phase_envelope_view import render_phase_envelope_view
+from components.views.viscosity_view import render_viscosity_view
+from components.views.compressibility_view import render_compressibility_view
+from components.views.phase_envelope_view import render_phase_envelope_view
 
 
 def apply_results_css():
@@ -57,7 +57,7 @@ def render_results_display() -> None:
         
     st.markdown("<hr style='margin-top: 8px; margin-bottom: 24px; border-top: 1px solid #d3e1ee;'>", unsafe_allow_html=True)
 
-    # --- DATA PREPARATION ---
+    # --- SHARED DATA PREPARATION ---
     snapshot = st.session_state.get("input_snapshot", {})
     api = snapshot.get("api_gravity", 35.0)
     gas_gravity = snapshot.get("gas_gravity", 0.65)
@@ -65,6 +65,7 @@ def render_results_display() -> None:
     reservoir_pressure_psia = snapshot.get("reservoir_pressure_psia", 2500.0)
     producing_gor = snapshot.get("producing_gor_scfstb", 650.0)
 
+    # Calculate Bubble Point once for consistent reference across all views
     calculated_pb = bubble_point_pressure(producing_gor, gas_gravity, temp_f, api)
 
     inputs = PVTInputs(
@@ -83,11 +84,9 @@ def render_results_display() -> None:
     if analysis_key == "bubble_point":
         render_bubble_point_view(inputs, rows_data, fluid_info, snapshot, analysis_key)
     elif analysis_key == "viscosity":
-        st.warning("Viscosity View under construction.")
-        # render_viscosity_view(inputs, rows_data, fluid_info, snapshot, analysis_key)
+        render_viscosity_view(inputs, rows_data, fluid_info, snapshot, analysis_key)
     elif analysis_key == "compressibility":
-        st.warning("Compressibility View under construction.")
-        # render_compressibility_view(inputs, rows_data, fluid_info, snapshot, analysis_key)
+        render_compressibility_view(inputs, rows_data, fluid_info, snapshot, analysis_key) # <-- Added Route
     elif analysis_key == "phase_envelope":
-        st.warning("Phase Envelope View under construction.")
-        # render_phase_envelope_view(inputs, rows_data, fluid_info, snapshot, analysis_key)
+        render_phase_envelope_view(inputs, rows_data, fluid_info, snapshot, analysis_key)
+        
