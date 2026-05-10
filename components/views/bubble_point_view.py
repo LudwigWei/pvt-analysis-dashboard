@@ -90,12 +90,12 @@ def render_bubble_point_view(inputs: PVTInputs, rows_data: list[dict], fluid_inf
     with col_interp:
         # Build the whole HTML string before rendering to avoid auto-closing tags
         interp_html = """
-        <div style='background: #ffffff; border: 1px solid #d3e1ee; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
+        <div style='background: #fafcff; border: 1px solid #d3e1ee; border-top: 4px solid #006fbb; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(15, 41, 66, 0.02); height: 100%;'>
             <h4 style='margin-top: 0; color: #0f2942; font-size: 16px; font-weight: 600; margin-bottom: 16px;'>Interpretation</h4>
-            <ul style='color: #5b7b97; line-height: 1.6; font-size: 14px; padding-left: 20px; margin: 0;'>
+            <ul style='color: #2d4356; font-weight: 500; line-height: 1.7; font-size: 15px; padding-left: 20px; margin: 0;'>
         """
         for text in build_interpretations(analysis_key, rows_data, snapshot):
-            interp_html += f"<li style='margin-bottom: 8px;'>{text}</li>"
+            interp_html += f"<li style='margin-bottom: 12px;'>{text}</li>"
         interp_html += "</ul></div>"
         
         st.markdown(interp_html, unsafe_allow_html=True)
